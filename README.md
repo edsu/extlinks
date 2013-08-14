@@ -6,8 +6,9 @@ extlinks is a small utility for downloading all the [wikipedia external link dum
 Usage
 -----
 
-First download all the wikipedia dumps, modify the WIKIPEDIA_LANGUAGES if 
-you need to:
+First download all the wikipedia dumps. If you only want specific wikipedia
+languages modify the `languages` variable in `settings.py`. You can also
+configure what directory the data files will be stored in.
 
 ```
 ./download.py
