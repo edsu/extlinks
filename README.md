@@ -1,7 +1,7 @@
 extlinks
 ========
 
-extlinks is a small utility for downloading all the [wikipedia external link dump files](http://dumps.wikimedia.org/), and extracting all the wikipedia page ids and external links from them as a stream suitable for other processing.
+extlinks is a small utility for downloading all the [wikipedia external link dump files](http://dumps.wikimedia.org/), and extracting the wikipedia page ids and external links from them as a stream suitable for other processing.
 
 Usage
 -----
