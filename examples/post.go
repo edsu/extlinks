@@ -35,7 +35,7 @@ func readUrls(urls chan string) {
 	}
 }
 
-func getUrls(urls chan string) {
+func postUrls(urls chan string) {
 	ginger := "http://example.com/collection/wikipedia/"
 
 	for {
@@ -56,5 +56,5 @@ func getUrls(urls chan string) {
 func main() {
 	urls := make(chan string)
 	go readUrls(urls)
-	getUrls(urls)
+	postUrls(urls)
 }
