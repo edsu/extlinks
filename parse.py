@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import re
 import gzip
@@ -45,3 +47,6 @@ def parse_sql(filename, pattern, func, lang):
         # don't forget unconsumed bytes, need them for the next match
         if len(rows) > 0:
             line = line[rows[-1].end():]
+
+if __name__ == "__main__":
+    load_all()
