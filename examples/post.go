@@ -23,7 +23,7 @@ func readUrls(urls chan string) {
 	for {
 		line, isPrefix, err := bio.ReadLine()
 		if isPrefix {
-			// url was too big. m'eh who cares for now ...
+			log.Println("uhoh, line too long for buffer ", line)
 		} else if err == nil {
 			cols := strings.Split(string(line), "\t")
 			urls <- cols[2]
@@ -36,7 +36,7 @@ func readUrls(urls chan string) {
 }
 
 func postUrls(urls chan string) {
-	ginger := "http://example.com/collection/wikipedia/"
+	ginger := "http://ec2-54-224-2-249.compute-1.amazonaws.com/collection/wikipedia/"
 
 	for {
 		url := <-urls
