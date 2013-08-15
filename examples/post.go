@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"sync"
 )
 
 type NewUrl struct {
@@ -34,13 +33,13 @@ func readUrls(urls chan string) {
 			panic(err)
 		}
 	}
-	close(urls)
 }
 
 func postUrls(urls chan string) {
 	ginger := "http://ec2-54-224-2-249.compute-1.amazonaws.com/collection/wikipedia/"
 
-	for url := range urls {
+	for {
+		url := <-urls
 		n := NewUrl{url}
 		data, _ := json.Marshal(n)
 		resp, err := http.Post(ginger, "application/json", bytes.NewReader(data))
@@ -57,14 +56,5 @@ func postUrls(urls chan string) {
 func main() {
 	urls := make(chan string)
 	go readUrls(urls)
-
-	var wg sync.WaitGroup
-	for i := 0; i < 10; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			postUrls(urls)
-		}()
-	}
-	wg.Wait()
+	postUrls(urls)
 }
