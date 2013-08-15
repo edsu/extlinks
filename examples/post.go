@@ -43,16 +43,16 @@ func postUrls(urls chan string) {
 	for url := range urls {
 		n := NewUrl{url}
 		data, _ := json.Marshal(n)
-	talkToGinger:
+	post:
 		resp, err := http.Post(*ginger, "application/json", bytes.NewReader(data))
 		if err != nil {
-			log.Fatal("error talking to ginger: ", err)
+			log.Fatal("post error: ", err)
 		} else if resp.StatusCode == http.StatusCreated {
 			log.Println("added ", url)
 		} else if resp.StatusCode == 429 {
 			// if ginger says Too Many Requests sleep a second and try again
 			time.Sleep(1 * time.Second)
-			goto talkToGinger
+			goto post
 		} else {
 			log.Println("received ", resp.Status)
 		}
