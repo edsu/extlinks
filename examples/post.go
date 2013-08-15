@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"flag"
 	"io"
 	"log"
 	"net/http"
@@ -38,23 +39,24 @@ func readUrls(urls chan string) {
 }
 
 func postUrls(urls chan string) {
-	ginger := "http://example.com/collection/wikipedia/"
-
 	for url := range urls {
 		n := NewUrl{url}
 		data, _ := json.Marshal(n)
-		resp, err := http.Post(ginger, "application/json", bytes.NewReader(data))
+		resp, err := http.Post(*ginger, "application/json", bytes.NewReader(data))
 		if err != nil {
 			log.Fatal(err)
-		} else if resp.StatusCode != http.StatusOK {
-			log.Fatal("received ", resp.Status)
-		} else {
+		} else if resp.StatusCode == http.StatusCreated {
 			log.Println("added ", url)
+		} else {
+			log.Println("received ", resp.Status)
 		}
 	}
 }
 
+var ginger = flag.String("ginger", "http://example.com/collection/wikipedia/", "url to ginger collection")
+
 func main() {
+	flag.Parse()
 	urls := make(chan string)
 	go readUrls(urls)
 
