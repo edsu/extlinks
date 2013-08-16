@@ -5,15 +5,14 @@ package main
 
 import (
 	"bufio"
-	"bytes"
-	"encoding/json"
 	"flag"
 	"io"
 	"log"
-	"net/http"
 	"os"
 	"strings"
 	"sync"
+
+	"code.google.com/p/go.net/websocket"
 )
 
 type NewUrl struct {
@@ -53,7 +52,24 @@ func postUrls(urls chan string) {
 	}
 }
 
-var ginger = flag.String("ginger", "http://example.com/collection/wikipedia/", "url to ginger collection")
+func sendUrls(urls chan string) {
+	origin := "http://" + *ginger + "/"
+	url := "ws://" + *ginger + ":80/collection/one/add"
+	ws, err := websocket.Dial(url, "", origin)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for url := range urls {
+		websocket.Message.Send(ws, url)
+
+		var message string
+		websocket.Message.Receive(ws, &message)
+		log.Println(message)
+	}
+}
+
+var ginger = flag.String("ginger", "localhost", "url to ginger collection")
 
 func main() {
 	flag.Parse()
@@ -65,7 +81,7 @@ func main() {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			postUrls(urls)
+			sendUrls(urls)
 		}()
 	}
 	wg.Wait()
