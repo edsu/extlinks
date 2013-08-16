@@ -1,2 +1,2 @@
-languages = ("en", "de", "fr", "it", "pl", "ja", "es", "ru", "pt", "nl")
+languages = ("nl",)
 data_dir = "data"

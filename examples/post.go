@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"code.google.com/p/go.net/websocket"
 )
@@ -24,7 +25,7 @@ func readUrls(urls chan string) {
 	for {
 		line, isPrefix, err := bio.ReadLine()
 		if isPrefix {
-			// url was too big. m'eh who cares for now ...
+			log.Println("uhoh, line too long for buffer ", line)
 		} else if err == nil {
 			cols := strings.Split(string(line), "\t")
 			urls <- cols[2]
@@ -41,11 +42,16 @@ func postUrls(urls chan string) {
 	for url := range urls {
 		n := NewUrl{url}
 		data, _ := json.Marshal(n)
+	post:
 		resp, err := http.Post(*ginger, "application/json", bytes.NewReader(data))
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("post error: ", err)
 		} else if resp.StatusCode == http.StatusCreated {
 			log.Println("added ", url)
+		} else if resp.StatusCode == 429 {
+			// if ginger says Too Many Requests sleep a second and try again
+			time.Sleep(1 * time.Second)
+			goto post
 		} else {
 			log.Println("received ", resp.Status)
 		}
